@@ -1,0 +1,792 @@
+WordPressテーマは、Webサイトのレイアウトを定義するファイルのセットです。
+テーマにはHTML、PHP、CSSが含まれ、多くの場合JavaScript / jQueryも使用されます。
+
+このWordPressチュートリアルでは、
+HTML5、CSS3、およびレスポンシブデザインの原則
+を使用してWordPressテーマを作成する方法を学習します。
+また、テーマのさまざまな部分を「テンプレート」に分けることも学びます。
+
+プラグインなどのテーマは、WordPressのコアコードとは別のものです。
+テーマを使用すると、ウェブサイトですべてのページと投稿に一貫したレイアウトを使用でき、
+ウェブサイト全体のルックアンドフィールを変更するためにすばやく変更できます。 
+WordPressからの情報または投稿のコンテンツを表示するには、
+WordPressが提供するテンプレートタグを使用する必要があります。
+これらはチュートリアルで説明します。
+
+このチュートリアルを完了して新しいWordPressテーマを作成したら、
+WordPressの子テーマチュートリアルの作成方法に従って、
+ここで学んだことを拡張することをお勧めします。
+このチュートリアルで作成するテーマは、子テーマのチュートリアルで使用するのに最適な基盤を提供します。
+
+◯用意するもの
+・テキストエディタ
+・ホスティングアカウントへのFTPアクセス
+・動作中のWordPressインストール
+
+このWordPressテーマ開発チュートリアルの手順を完了するには、
+Notepad ++やNetBeansなどのテキストエディターが必要です。 
+また、ホスティングアカウントへのFTPアクセスと、
+動作するWordPressインストールも必要です。
+
+HTML5とは何か、なぜ使用する必要があるのか
+HTML5はWebマークアップ言語HTMLの最新バージョンであり、
+あらゆるコンピューター、ラップトップ、タブレット、
+または携帯電話でコンテンツを一貫して簡単に表示できるようにする最新の優れた機能セットを提供します。
+
+最大の変更点は、セマンティックHTML要素の新しいセットが利用可能になったことです。
+たとえば、HTMLページのフッターは<footer> </ footer>要素を使用して定義できるようになりました。
+これにより、含まれるコンテンツがフッターの一部であることをWebブラウザーに通知します。 
+HTMLの古いバージョンでは、フッターコンテンツは<div> </ div>などの一般的な要素を使用して作成されます。
+
+基本的なHTML5ドキュメントは次のようになります。
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>My HTML5 Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/normalize.min.css">
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>
+    <header>
+      <h1>My Website</h1>
+    </header>
+    <main>
+      <section>
+        <header>
+          <h2>My Articles</h2>
+        </header>
+        <article>
+          <header> 
+            <h2>An Article</h2> 
+          </header>
+          <p class="inline-text-box">Left</p><p class="inline-text-box">Right</p>
+        </article>
+      </section>
+    </main>
+    <footer>
+        <p>Copyright &copy; 2017</p>
+    </footer>
+  </body>
+</html>
+
+◯レスポンシブデザインとは
+レスポンシブデザインとは、画面のサイズに基づいて、
+訪問者にとって最適な形式でWebサイトが自動的に表示されることを意味します。 
+ページレイアウトは、訪問者の画面上の使用可能なスペースに文字通り「応答」します。 
+コンテンツは完全に配置されるため、何も切り取られず、画面から何もあふれず、
+Webサイトは可能な限りきれいに見えます。
+
+ウェブサイトのレイアウトを一連のグリッドと考え、
+コンテンツにグリッドの幅の割合を与える必要があります。
+たとえば、divは幅が800pxではなく、使用可能なスペースの50％を占める可能性があります。
+全ページ幅のdivは使用可能なスペースの100％を占有するため、
+その中に4つのdivを1行で配置する場合は、それぞれが25％のスペースを取得します。
+
+画像の場合、実際のサイズの最大幅が100％になるように設定し、
+高さを自動に設定できます。 
+画像のコンテナのサイズが小さくなると、画像の幅と高さが自動的に小さくなります。
+
+画像の場合、max-width：100％の代わりにwidth：100％を使用すると、
+ピクセルでの実際の幅で停止する代わりに、利用可能なスペースの100％を画像が占有します。
+画像の幅が200pxであるが、画面の100％を占めるdiv内にある場合、
+max-widthは画像の幅が200pxを超えないことを意味します。
+
+例
+/* GOOD WIDTH */
+.inline-text-box {
+  width: 50%;
+}
+/* BAD WIDTH */
+.inline-text-box {
+  width: 800px;
+}
+/* GOOD IMAGE */
+img {
+  max-width: 100%;
+  height: auto
+}
+/* BAD IMAGE */
+img {
+  width: 100%;
+  height: auto;
+}
+
+WordPressテーマを完全にレスポンシブにするために、
+メディアクエリというCSS3機能を使用することもできます。 
+メディアクエリでは、オプションで、
+少なくとも1つのメディア機能（最大幅、向きなど）に影響を与える（スクリーン、印刷など）メディアタイプを
+定義します。 メディア機能は、andキーワードを使用して連結できます。
+
+・最初の例では、CSSは、表示可能な幅（ウィンドウ全体ではなく、ブラウザー内の領域）が400pxから800pxのすべての画面（モニター、電話など）に適用されます。
+
+・2番目の例は、それを表示するすべてのメディアタイプに適用されます。
+・別のメディアタイプは「印刷」です。
+　これは、ユーザーがページの印刷プレビューを見ている場合にのみCSSが適用されることを意味します。
+
+メディアタイプとメディア機能の完全なリストは、Mozilla Developer Network Webサイトで入手できます。
+→https://developer.mozilla.org/en-US/docs/Web/CSS/@media
+
+CSSスタイルシートでは、コンテンツがいつ変更されるか、
+どのコンテンツが変更されるか、そのコンテンツがどのように変更されるかを規定するルールを定義します。 
+このようにして、テキストボックスの幅やdivの背景色など、CSS属性を変更できます。 
+ルールが適用されるタイミングを規定するメディア機能ルールの例：
+
+max-width ：ブラウザの表示可能領域の最大幅。これよりも広く、ルールは適用されません
+min-width  ：表示可能領域の最小幅。これより小さく、ルールは適用されません
+orientation ：画面が縦向きか横向きか
+
+一般的な例は、画面の50％を占める2つのテキストボックスが並んでいる場合です。 
+ブラウザウィンドウが小さくなると、ボックスは自動的に調整され、
+横から消えずにウィンドウの50％を占有します。 
+ブラウザーウィンドウが小さすぎてこれらのボックス内のすべてのテキストを適切に表示できない場合は、
+ウィンドウサイズの100％を占めて一方を他方の上に表示するように指示できます。
+ より適切な場合は、コンテンツを完全に非表示にすることもできます。
+
+ステップ1-テーマとそのファイルの保存
+テーマを少しでも変更すると、エラーが発生し、Webサイトが使用できなくなる可能性があります。
+よくある問題は、コードに変更を加えた後、Webサイトをロードしようとすると、
+死の白い画面として知られる白い画面が表示されることです。 
+白い画面の原因となったエラーのデバッグは困難な場合があります。
+→PHPのエラー画面。ログをみてエラーをつきとめる必要が有る。
+
+ウェブサイトの中断を避けるために、オフラインバージョンですべての変更をテストすることが重要です。
+→ローカル環境のこと
+ 変更が完了したら、実際のWebサイトに作業バージョンをアップロードできます。 
+ →サーバーにアップ。
+ WindowsでローカルのWordPress開発サーバーを作成する方法についてはこちらを、
+ Docker（任意のOS）でWordPressを実行する方法についてのチュートリアルはこちらをご覧ください。
+ 
+ 実際のチュートリアルを始めて、WordPressテーマの作成方法を学びましょう！
+WordPressテーマは、wp-content / themes /フォルダー内の独自のフォルダーに保存されます。
+
+wp-content / themes /フォルダーに、my-themeという名前の新しいフォルダーを作成します。
+ 作成したフォルダには、簡単に識別できるように、一意でわかりやすい短い名前が必要です。
+ 
+ 注：テーマフォルダー名に数字やスペースを含めることはできません。
+  テーマには、別のテーマと同じフォルダー名を付けないでください。 
+  テーマの共有を計画している場合、その名前の別のテーマがWordPress.orgテーマディレクトリに
+  まだアップロードされていないことを確認する必要があります。
+ 
+ WordPressテーマは、index.phpとstyle.cssの2つのファイルで作成でき、
+ WordPressはこれらを使用してすべてのページを表示し、サイトに投稿します。
+
+現実的には、Webサイトの投稿、ページ、およびその他のセクションに独自のレイアウトを設定する必要があります。 
+Webサイトの各セクションには、そのセクションにのみ適用されるHTMLおよびPHPを保持する独自のファイルが与えられます。
+各ファイルは「テンプレート」と呼ばれます。
+
+カスタム投稿タイプを使用する場合、そのタイプの投稿にのみ適用されるテンプレートを作成できます。 
+特定のカテゴリの投稿のスタイルを変えたい場合は、ループ内でif…then…ステートメントを使用してそれを行うことができます。
+
+各テンプレートファイルは、WordPressのドキュメントで定義されている正しい名前を使用する必要があります。
+ 
+index.php以外のテンプレートファイルの一部として以下がある。：
+header.php ：<！DOCTYPE html>から始まる、ページの上部に配置されるHTML。
+single.php ：ブログから単一の投稿を表示するときに使用。
+page.php ：ブログから単一のページを表示するときに使用されます。
+comments.php ：コメントとコメントテキストボックスの表示方法を定義します。
+footer.php ： </ html>を含む、ページの下部にあるHTMLが含まれます。
+ 
+テンプレートの完全なリストについては、WordPressテーマ開発ハンドブックをご覧ください。
+→https://developer.wordpress.org/themes/basics/template-files/
+
+テーマを保存するフォルダができたので、いくつかの基本的なテンプレートファイルを作成する必要があります。
+ 
+ステップ2 –テンプレートファイルとCSSスタイルシートの作成
+ 
+my-themeフォルダーに、次のファイルPHPファイルを作成します。
+・header.php
+・index.php
+・footer.php
+・functions.php
+・sidebar.php
+・single.php
+・page.php 
+
+PHPファイルに加えて、style.cssという名前の新しいCSSファイルを作成します。
+（メインスタイルシートはstyle.cssと呼ばれる必要があります）。
+
+WordPressが管理コントロールパネルに読み込み、表示するstyle.cssのトップとしている。
+
+情報は、ヘッダーキーワードで始まる複数行のCSSコメントとして各行のヘッダーとして記述する必要があります。
+
+著者（あなたの名前）、著者のウェブサイト、テーマの説明、テーマの名前、テーマのバージョンなどの情報を
+定義するために利用できるヘッダーキーワードがいくつかあります。
+ヘッダーキーワードの完全なリストは テーマについては、WordPress Codex-ファイルヘッダーページにアクセスしてください。
+→https://codex.wordpress.org/File_Header#Theme
+
+ヘッダーの記述形式はキーワード：以下情報になります。
+/*
+Theme Name: My Theme ←テーマの名前
+Author: Hostinger ←著者
+Author URI: http://www.hostinger.com/tutorials ←著者のURL
+Description: My first responsive HTML5 theme ←説明
+Version: 1.0 ←バージョン
+License: GNU General Public License v3 or later ←決まり文句
+License URI: http://www.gnu.org/licenses/gpl-3.0.html ←決まり文句
+*/
+注：7行目と8行目は、WordPress.orgでテーマを共有する予定がある場合にのみ必要です。
+自分のWebサイトでテーマを使用する場合は、これらの2行をスキップして、
+コメントセクションを閉じることができます。
+→入れておいて問題ない。
+
+この時点で、テーマは管理コントロールパネルのテーマセクションにすでに表示されています。 白とグレーのチェッカーボックスの画像と、その下に[マイテーマ]が表示されます。 テーマが完成したら、スクリーンショットを撮ってここに表示できます。
+図：図2
+
+この時点でテーマを有効にすると、index.phpが空でテンプレートが存在しないため、空白のホームページが表示されます。
+次に、ページの背景色を変更する単一のルールをCSSファイルに追加します。
+コメントの終了後に空白行を追加します。
+新しい空行（ファイルの11行目）の下の次の行に、次のように書きます。
+
+* {
+  box-sizing: border-box;
+}
+body {
+    background-color: #f9f9f9;
+    font-family: Helvetica;
+}
+ 
+最初のエントリは、レスポンシブスタイリングの重要な部分です。 
+*はワイルドカードであり、HTMLドキュメントで見つかったすべてのクラスに一致します。
+ページ上のすべてのアイテムの最終的な幅と高さには、content、padding、境界線を含める必要があることを示しています。
+これを設定せず、paddingまたは境界線と並んでいる2つの50％幅のボックスがある場合、
+実際のサイズは100％より大きいため、横に並んでいません。
+左右に1％のパディングが追加されるため、1％のパディングを持つ100％の幅のボックスは実際には102％の幅です。
+このルールは、ボックスの外側ではなく内側にパディングを効果的に追加します。
+2番目のエントリは白の背景色を変更するだけなので、スタイルシートが使用されているかどうかをすばやく確認できます。
+テーマで使用されるデフォルトのフォントも設定します。
+
+ステップ3 –開発を開始する前に
+実際にWordPressテーマレイアウトの作成を開始する前に、いくつかのコードをさまざまなファイルに追加して、
+自分自身で構築するための適切な出発点にする必要があります。
+これらの手順は必須ではありませんが、強くお勧めします。
+
+これらの手順には簡単な説明があるため、すぐに実際のレイアウトの構築に進むことができます。
+
+最初に、normalize.cssという名前のCSSファイルを含めます。
+ブラウザによって、ページの余白やpaddingなどのデフォルト設定が異なります。
+Normalize.cssはいくつかの属性を明示的に設定して、すべてのブラウザーがページをまったく同じように表示するようにします。
+スタイルシートを使用してこれらのデフォルトを設定しない場合、
+一般的な問題は、ページの左上からメインヘッダーを開始しようとすると、
+ヘッダーの上に空白スペースが実際に存在することです。
+
+◯functions.php
+functions.phpを開き 、次のコードをddします
+
+<?php
+// This function enqueues the Normalize.css for use. The first parameter is a name for the stylesheet, the second is the URL. Here we
+// use an online version of the css file.
+function add_normalize_CSS() {
+    wp_enqueue_style( 'normalize-styles', "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css");
+}
+
+次に、サイドバーウィジェットを有効にする必要があります。
+このコードを含めない場合、ウィジェットのメニューリンクは管理コントロールパネルに表示されず、
+ウィジェットを追加することはできません。まだ滞在中のfunctions.php、前の関数の下に、次のコードを追加します。
+
+// Register a new sidebar simply named 'sidebar'
+function add_widget_Support() {
+                register_sidebar( array(
+                                'name'          => 'Sidebar',
+                                'id'            => 'sidebar',
+                                'before_widget' => '<div>',
+                                'after_widget'  => '</div>',
+                                'before_title'  => '<h2>',
+                                'after_title'   => '</h2>',
+                ) );
+}
+// Hook the widget initiation and run our function
+add_action( 'widgets_init', 'add_Widget_Support' );
+
+ここで、カスタムナビゲーションメニューを登録して、管理パネルの[外観]-> [メニュー]機能を使用できるようにする必要があります。
+前のコードの下に次を追加します。
+
+// Register a new navigation menu
+function add_Main_Nav() {
+  register_nav_menu('header-menu',__( 'Header Menu' ));
+}
+// Hook to the init action hook, run our navigation menu function
+add_action( 'init', 'add_Main_Nav' );
+functions.phpを 保存し、テーマのディレクトリにアップロードします。
+
+◯sidebar.php
+次にsidebar.phpファイル と次のコードを開きます。get_sidebar（）  が呼び出された場所で、
+サイドバーとウィジェットがテーマに表示されます。
+
+<?php if ( is_active_sidebar( 'sidebar' ) ) : ?>
+  <aside id="primary-sidebar" class="primary-sidebar widget-area" role="complementary">
+    <?php dynamic_sidebar( 'sidebar' ); ?>
+  </aside>
+<?php endif; ?>
+
+最初の行は、有効なウィジェットがない場合、サイドバーのHTMLを表示してはならないことをWordPressに伝えます。
+2行目は、ウィジェットを含む要素の属性を設定します。
+
+HTML5は、サイドバーに「aside」要素を提供します。
+3行目は、実際にウィジェットを表示するWordPress関数です。
+最後の行は、最初のifステートメントを閉じます。
+sidebar.phpを保存してテーマのディレクトリにアップロードします。
+
+投稿とページ間を簡単に移動するには、管理コントロールパネルを開き 、
+サイドバーに[ ページ] および[ 最近の投稿]ウィジェットを追加します。次に、レイアウトの構築に進みます。
+ステップ4 –テンプレートを使用してレイアウトを作成する
+
+◯header.php
+header.phpは、DOCTYPE宣言から始めて、ドキュメントの最上部を定義します。
+
+すべてのHTMLドキュメントは、DOCTYPE宣言で開始する必要があります。
+DOCTYPE宣言は、Webブラウザーにドキュメントの解釈方法を指示します。
+HTML5 doctypeは単にhtmlです。
+
+開始<html>タグには言語属性が必要です。
+WordPressには、インストール中に選択した言語の正しい言語コードを入力する機能– language_attributes（）が用意されています。
+
+タイトルフィールドでは、サイトの名前を表示するコード行を使用し、
+その後にif ... then…ステートメントの短縮形を使用して、Webサイトのキャッチフレーズ
+または表示中の現在のページまたは投稿のタイトルを表示します。
+
+？characterは、三項演算子という名前のPHP条件演算子です。
+このコード行では、is_front_page（）  は、フロントページを表示している場合にTRUEを返し、
+投稿またはページを表示している場合にFALSEを返すWordPress関数です。
+TRUEが返された場合はコロンの前の関数が使用され、FALSEが返された場合はコロンの後の関数が使用されます。
+
+以下に示すように、bloginfo（）  関数は、WordPressデータベースからさまざまな情報を取得するために、
+さまざまなパラメーターで繰り返し使用されます。<head>タグを</ head>で閉じる前に、
+wp_head（）アクションフックをインクルードして、アタッチされた関数が実行されるようにする必要があります。
+
+body_class（）  関数は、ワードプレスによって設定されたデフォルトのCSSクラスあなたの体を提供します。
+最後の行では、管理コントロールパネルでナビゲーションメニューが作成されている場合、
+ナビゲーションメニューを表示できます。最終的なheader.phpは次のようになります。
+
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>
+ <head>
+   <title><?php bloginfo('name'); ?> &raquo; <?php is_front_page() ? bloginfo('description') : wp_title(''); ?></title>
+   <meta charset="<?php bloginfo( 'charset' ); ?>">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="<?php bloginfo('stylesheet_url'); ?>">
+   <?php wp_head(); ?>
+ </head>
+ <body <?php body_class(); ?>>
+   <header class="my-logo">
+   <h1><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php bloginfo('name'); ?></a></h1>
+ </header>
+ <?php wp_nav_menu( array( 'header-menu' => 'header-menu' ) ); ?>
+ 
+ロゴをヘッダーとして使用する場合は、<？php bloginfo（ 'name'）;を置き換えます。？> <header>タグ内の画像コード。
+header.phpを保存して、テーマのフォルダーにアップロードします。
+
+◯index.php
+index.phpはホームページを定義し、特定のテンプレート（つまりsingle.php、page.php）が見つからない場合の
+デフォルトレイアウトとしても使用されます。
+
+私たちは、使用しますテンプレートタグをヘッダ（確認するためにGET_HEADERサイドバー（、）get_sidebar）と
+フッタ（get_footer）コードは、当社のホームページに含まれています。
+
+WordPressループには、投稿とその抜粋のリストがテンプレートタグとともに表示されます。
+また、HTML5セマンティック要素<section>、<main>、<header>および<article>も使用します。
+一部の要素にはクラスが割り当てられ、style.cssファイルに到達するとクラスが書き込まれます。
+
+<?php get_header(); ?>
+<main class="wrap">
+  <section class="content-area content-thin">
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+      <article class="article-loop">
+        <header>
+          <h2><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></h2>
+          By: <?php the_author(); ?>
+        </header>
+        <?php the_excerpt(); ?>
+      </article>
+<?php endwhile; else : ?>
+      <article>
+        <p>Sorry, no posts were found!</p>
+      </article>
+<?php endif; ?>
+  </section><?php get_sidebar(); ?>
+</main>
+<?php get_footer(); ?>
+
+ループは<？php if（have_posts（））：while（have_posts（））：the_post（）;？>で始まり、
+<？php endif; ？>で終わる。 
+ループ内では、次のテンプレートタグが使用されます。
+
+・<？php the_permalink（）; ？>     ：実際の投稿の正しいURLを出力する
+・<？php the_title_attribute（）; ？>：リンクのタイトル属性に対して安全な形式で投稿のタイトルを出力する
+・<？php the_title（）; ？>               ：投稿のタイトルを出力する
+・<？php the_author（）; ？>          ：著者の名前を出力する
+・<？php the_excerpt（）; ？>        ：投稿の抜粋を出力する。投稿を作成しない場合は自動生成される。
+
+<header> </ header>タグはどのページでも複数回使用でき、ページヘッダーを特に参照しません。
+セクションと記事には、<h1>、<h2>などの内部のテキストが使用されるヘッダー要素が必要です。
+セクションまたは記事にヘッダーテキストがない場合は、省略できます。
+
+index.phpを保存して、テーマのディレクトリにアップロードします。 
+今すぐサイトにアクセスすると、非常にシンプルなページが表示されます。
+図3
+
+ただし、タブのタイトルはウェブサイトの名前とキャッチフレーズであることがわかります。
+ページの上部には、ウェブサイトのタイトル（または、代わりに使用した場合はロゴ）があります。 
+存在する投稿には、タイトル、作成者、および抜粋が表示されます。 
+ページは正常に表示されますが、footer.phpで開いている<body>および<html>タグを閉じる必要があります。
+
+◯footer.php
+footer.phpはすべてのページのフッターを定義し、他のテンプレートファイルで開いているHTMLタグをすべて閉じる必要があります。
+この場合、<body>と<html>はheader.phpからまだ開いています。
+
+また、最終的なWordPressコードとJavaScriptがページに追加されるように、
+wp_footer（）アクションフックを含める必要があります。
+ホームページ、投稿、またはページにアクセスしたときに管理者としてログインした場合、
+管理バーが表示されないことに気付くでしょう。
+管理バーを表示するコードは、wp_footer（）アクションフックにフックされます。
+
+また、HTML5セマンティック要素<footer> </ footer>を追加して、フッターを明示的に定義します。
+
+<footer>
+      <p>Copyright &copy; 2017</p>
+    </footer>
+    <?php wp_footer(); ?>
+  </body>
+</html>
+
+footer.phpを保存して、テーマのディレクトリにアップロードします。
+
+◯single.php
+single.phpは、Webサイトで1つの投稿を表示するときのレイアウトを定義します。
+index.phpとはまったく異なる場合があります。
+
+この場合、レイアウトの違いを強調するためだけにサイドバーを投稿に追加しません。
+
+メインコンテンツは、スタイルシートからcontent-full-widthクラスを指定したため、ページの全幅を使用します。 
+ここでは必要ないため、リンクはタイトルから削除されました。 完全な投稿を表示する関数はthe_content（）です：
+
+<?php get_header(); ?>
+<main class="wrap">
+  <section class="content-area content-full-width">
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+      <article class="article-full">
+        <header>
+          <h2><?php the_title(); ?></h2>
+          By: <?php the_author(); ?>
+        </header>
+       <?php the_content(); ?>
+      </article>
+<?php endwhile; else : ?>
+      <article>
+        <p>Sorry, no post was found!</p>
+      </article>
+<?php endif; ?>
+  </section>
+</main>
+<?php get_footer(); ?>
+
+◯page.php
+page.phpはページの表示方法を定義し、インデックスや投稿レイアウトとは異なる場合があります。
+テンプレートが存在しない場合は、代わりにindex.phpテンプレートが使用されることに注意してください。 
+page.phpを作成しない場合、posts.phpと同じレイアウトは使用されません。
+
+違いをより明確にするために、このレイアウトにサイドバーを再度追加し、
+ページコンテンツがページ幅の70％を占めるようにします。
+
+<?php get_header(); ?>
+<main class="wrap">
+  <section class="content-area content-thin">
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+      <article class="article-full">
+        <header>
+          <h2><?php the_title(); ?></h2>
+          By: <?php the_author(); ?>
+        </header>
+        <?php the_content(); ?>
+      </article>
+<?php endwhile; else : ?>
+      <article>
+        <p>Sorry, no page was found!</p>
+      </article>
+<?php endif; ?>
+  </section><?php get_sidebar(); ?>
+</main>
+<?php get_footer(); ?>
+
+保存しておく。
+
+◯style.css
+スタイルシートの下部に次を追加します。 
+これにより、さまざまなボックスに白い背景と青い境界線が表示され、
+各ボックスが実際に占めるスペースを視覚化できます。
+
+
+/*
+Theme Name: My Theme1
+Author: Your Name
+Author URI: http://www.yourwebsite.com
+Description: My first responsive HTML5 theme
+Version: 1.0
+License: GNU General Public License v3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
+*/
+
+* {
+  box-sizing: border-box;
+
+}
+
+body {
+    background-color: #f9f9f9;
+    font-family: Helvetica;
+}
+.my-logo,
+footer {
+  width: 100%;
+  padding-left: 1%;
+  margin-bottom: 8px;
+  background-color: #78baff;
+  border: 1px solid #78baff;
+}
+body > header > h1 > a {
+color: #ffffff;
+font-weight: 400;
+}
+article > header {
+
+}
+footer {
+  margin-top: 4px;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* 'Margin: 0 auto' centers block content on the page */
+.wrap {
+  width: 99%;
+  margin: 0 auto;
+}
+
+.content-area {
+  display: inline-block;
+}
+
+.content-thin {
+    width: 70%;
+}
+
+.content-full-width {
+    width: 100%;
+}
+
+.content-area,
+.primary-sidebar {
+  display: inline-block;
+}
+
+.primary-sidebar {
+  width: 25%;
+  padding: 1%;
+  vertical-align: top;
+  background-color: #ececec;
+}
+
+.article-loop {
+    width: 45%;
+    text-align: left;
+    margin: 5px;
+    padding: 10px;
+}
+
+.article-full {
+  width: 99%;
+  padding: 1%;
+}
+
+.article-loop,
+.article-full {
+  display: inline-block;
+  vertical-align: top;
+  background-color: #FFF;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+保存しておく。
+
+基本的なテンプレートとスタイルシートができたので、投稿とページを簡単にナビゲートできます。 
+新しく作成したテーマは次のようになります。
+図4
+
+◾️メディアクエリの使用
+基本レイアウトのフロントページには2つのインラインボックスがあるため、
+ブラウザーウィンドウが小さすぎてテキストを適切に表示できない場合の動作を簡単に変更できます。
+
+このWordPressテーマチュートリアルでは、ブラウザウィンドウが800px未満の場合、投稿リスト内の投稿の幅を変更します。
+横に並んだ2つの投稿ではなく、各投稿に独自の行があります。
+これを行うには、メディアクエリを追加します。メディアクエリの復習が必要な場合は、
+「レスポンシブデザイン」とは何ですか？続行する前に、このチュートリアルのセクションをご覧ください。
+
+メディアクエリを記述する場合、スタイルシートのどこにでもクエリを記述できます。
+スタイルシートの下部にすべてのメディアクエリを配置するか、
+元の定義のすぐ下に特定のアイテムの特定のメディアクエリを記述できます。
+それはあなたが最も論理的に考えるものの問題です。
+
+最初に、.article-loopクラスに影響するメディアクエリを作成します。
+このクラスの幅はデフォルトで49％です。元の定義のすぐ下に記述します。
+メディアクエリでは、ブラウザウィンドウの幅が800pxより小さい場合、
+.article-loopクラスは代わりに利用可能なスペースの99％を使用する必要があると記述されます。
+
+次に、ブラウザウィンドウの幅が600pxより小さい場合に、
+サイドバーをメインコンテンツの下に押し込み、
+メインコンテンツとサイドバーの両方を100％の幅になるように拡張するメディアクエリを作成します。
+これは、スペースが限られているモバイルデバイスに適したレイアウトです。
+
+まだstyle.cssで、73行目である.article-loopを見つけます。
+.article-loopクラスの下に、次のように記述します。
+
+
+@media screen and (max-width: 800px) {
+  .article-loop {
+    width: 99%;
+  }
+}
+
+ここの1行目は、メディアクエリは画面にのみ影響し（つまり、印刷プレビューモードには影響せず）、
+幅が800ピクセル以下のブラウザウィンドウにのみ影響することを示しています。 
+style.cssを保存してテーマのディレクトリにアップロードします。 Webサイトのホームページに移動します。 
+ブラウザウィンドウのサイズを変更すると、幅が800ピクセルに達すると、各投稿のボックスの幅が変わり、上下にドロップします。
+ブラウザウィンドウの幅をできる限り小さくするまで続けます。 
+スペースが小さすぎるため、すべてのテキストが読みにくくなりますが、
+画面から消えることはありません。 幅がパーセンテージではなくピクセル幅として定義されている場合、
+ウィンドウが小さくなりすぎるとすぐにサイドバーが消え、水平スクロールが必要になります。
+
+次に追加するメディアクエリは、上記のクエリに似ています。 
+メインコンテンツとサイドバーに使用可能なスペースを100％使用するよう指示し、
+サイドバーはメインコンテンツの下にドロップします。
+
+注：これはスタイルシートの異なる場所にある異なるクラスに影響するため、
+　　代わりにスタイルシートの下部に配置する価値があります。
+
+@media screen and (max-width: 400px) {
+  .content-area,
+  .primary-sidebar {
+    width: 100%;
+  }
+}
+
+style.cssを保存して、テーマのディレクトリにアップロードします。 ホームページに戻り、
+コンテンツが幅の100％を占め、サイドバーがメインコンテンツの下に表示されるまで、ブラウザウィンドウのサイズを変更します。
+
+サイドバーを使用して、使用可能なページをクリックすると、
+サイドバーがページコンテンツの下にも表示され、すべてが適切に収まります。
+
+
+◾️WordPressテンプレートタグとアクションフックについて
+テーマをWordPressと完全に統合するには、テンプレートタグとアクションフックを使用する必要があります。 
+これらは明らかに異なる2つのものです。
+
+◯Template tags
+テンプレートタグは、WordPressが提供するPHP関数で、テーマのテンプレートファイル（header.phpなど）を
+簡単に別のファイルに含めたり、データベースの情報を表示したりします。
+
+たとえば、ホームページにフッターを表示し、他のページには表示しないようにするには、
+index.phpの下部にget_footer（）を追加しますが、page.phpには追加しません。
+
+以下に、使用可能なタグの概要を示す重要なテンプレートタグの簡単なリストを2つ示します。
+
+テンプレートファイルを含めるテンプレートタグ：
+
+get_header（）     　： header.phpテンプレートを含みます
+get_sidebar（） 　　： sidebar.phpテンプレートを含みます
+get_footer（）　　　： footer.phpテンプレートを含みます
+get_search_form（）： searchform.phpテンプレートが含まれています
+
+データベースからの情報を表示するテンプレートタグ
+注：一部のテンプレートタグはループで使用する必要があります。 
+       ループについては、チュートリアルの後半で説明します。
+       これは、要求された投稿を取得するコードを意味します。
+
+bloginfo（）–パラメーターとして要求された情報を表示します。
+つまり、bloginfo（“ name”）は管理コントロールパネルで定義されたWebサイトの名前を表示します（パラメーターのリストを表示）
+
+single_post_title（） ：single.phpで使用される場合、現在表示されている投稿のタイトルを表示します
+the_author（）          ：現在表示されている投稿の著者を表示します
+the_content（）        ：投稿またはページのメインテキストを表示します
+the_excerpt（）        ：投稿またはページの抜粋
+WordPressテンプレートタグの完全なリストはこちらにあります。
+
+Action hooks
+アクションフックは、WordPressが提供するPHP関数で、通常は他の関数が付加されています。
+一部のフックにはデフォルトで機能が付加されておらず、プラグインが使用するために存在します。
+アクションフックを使用すると、プラグインは独自の関数をアタッチして、ページの読み込みのさまざまなポイントで実行できます。
+
+テーマのヘッダーテンプレートでwp_head（）アクションフックが呼び出され、
+<head> </ head>タグ内にデフォルトのWordPressヘッダーHTMLが含まれます。
+HTMLをページに追加するためのいくつかのコアWordPress関数があり、
+プラグインによってそれに接続されているすべての関数を実行できます。
+
+テーマのフッターセクションで、wp_footer（）アクションフックが呼び出され、
+デフォルトのHTMLとJavaScriptが含まれ、プラグインによってアタッチされた関数が実行されます。
+
+注：WordPressテーマの作成中にアクションフックを使用しないと、
+　　重要なコアコードが失われ、プラグインが正しく機能できなくなります。
+
+たとえば、footer.phpテンプレートでwp_footer（）を呼び出さないと、
+管理者としてログインしているときに上部の管理バーが表示されなくなります。 
+
+管理バーを表示させるコアWordPressコードはwp_footer（）アクションフックに添付され、
+アクションフックが存在しない場合、添付された関数は実行できません。
+
+アクションフックの詳細については、WordPressプラグインの作成方法の
+「アクションとアクションフック」セクションをご覧ください。
+→https://www.hostinger.com/tutorials/how-to-create-wordpress-plugin#What-are-Hooks
+
+◾️The WordPress Loop
+
+ループは、投稿を実際に表示するために使用されます。 
+単一の投稿または公開されたすべての投稿を1つのページに表示するために使用できます。 
+ループ内で記述するHTMLは、ループによって要求されたすべての投稿を表示するために使用されます。 
+コードは、最終投稿に到達するまでループを続けます。
+
+1つの投稿を表示する場合は、
+ループ内でテンプレートタグthe_content（）を使用して投稿のコンテンツを表示します。 
+公開されたすべての投稿のリストを表示する場合は、代わりにループ内でthe_excerpt（）を使用して、
+投稿全体が表示されないようにすることができます。
+
+ループは、4行のコードで構成されるif ... then ...ステートメントの複数行の省略形です。 
+最初の行は、投稿が利用可能である間に投稿が見つかった場合、
+次のコードを使用して投稿を表示することを示しています。
+一致する投稿が見つからない場合は、代わりに置換テキストを定義できます。 
+デフォルトのWordPressの例は次のようになります。コメント行は、HTMLタグとテンプレートタグが書き込まれる場所です。
+
+
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+// HTML and template tags here to define the layout, and what is shown from the post
+<?php endwhile; else : ?>
+  <p><?php _e( 'Sorry, no posts matched your criteria.' ); ?></p>
+<?php endif; ?>
+
+
+Conclusion
+
+おめでとうございます！ 最初のレスポンシブHTML5 WordPressテーマを作成しました！
+
+テンプレートとテンプレートタグを理解したら、
+WordPressコーデックスのテンプレートとテンプレートタグのリストをもう一度見て、
+レイアウトに新しいセクションを追加してみてください。 
+CSSのスタイルと幅の変更を試して、ブラウザーがさまざまな状況にどのように反応するかを確認してください。
+メディアクエリのルールを変更し、定義できるより良いルールがあるかどうかを確認します。
+
+WordPressの子テーマの作成方法のチュートリアルに進むこともできます。
+
+
+
+
+
+
+
+
+
+
+
+
+

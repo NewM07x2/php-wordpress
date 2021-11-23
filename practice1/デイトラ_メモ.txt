@@ -1,0 +1,440 @@
+WordPressの構造
+WordPressのzipファイルを解凍するとファイルが多く存在するが、
+主にテーマを作成していくにあたり、触れていくファイルは以下になる。
+
+・『wp-content』フォルダ
+・『wp-config.php』
+
+wp-config.php：データベースとの接続情報などが書かれた大元の設定ファイル
+wp-content > plugins：インストールしたプラグインのソースコード達がここに入る
+wp-content > themes：テーマフォルダ
+wp-content > uploads：管理画面からアップロードしたメディアがここに入る
+
+WordPressを使ったサイト制作の流れ
+1.デザイン
+2.コーディング
+3.WordPressテーマ化
+
+使いまわせる汎用デザインの独自テーマを作って、それを案件ごとにカスタマイズするのが最も生産性が高い。
+
+ベーステンプレート
+【必須ファイル】
+
+index.php
+page.php
+single.php
+archive.php
+header.php
+footer.php
+search.php
+404.php
+functions.php
+style.css
+
+【準必須ファイル】
+
+sidebar.php
+category.php
+tag.php
+※今回は使いませんが、home.phpやfront-page.phpもよく使います。index.phpも加えて、3つそれぞれの優先度と役割の違いは覚えておきましょう。
+
+style.cssとfunctions.phpを設定してテーマとして認識させる
+まずは独自テーマをテーマとして認識させるために必要なstyle.cssとfunctions.phpを作っていきます。
+
+フォルダ直下に作ったstyle.cssに、以下のように記述します。
+@charset "utf-8";
+/---------------------------------
+テーマとしてWPに認識させるための記述↓
+---------------------------------/
+/*
+theme Name: TF-30
+Author: Shohei Ohtaki
+Description: 自作テーマ
+version： 1.0.0
+*/
+この『/～/』で囲まれた部分がテーマの概要です。
+
+次に、functions.phpにもセットアップのための記述をしましょう。
+<?php
+/**
+* テーマのセットアップ
+* 参考：https://wpdocs.osdn.jp/%E9%96%A2%E6%95%B0%E3%83%AA%E3%83%95%E3%82%A1%E3%83%AC%E3%83%B3%E3%82%B9/add_theme_support#HTML5
+**/
+function my_setup()
+{
+add_theme_support('post-thumbnails'); // アイキャッチ画像を有効化
+add_theme_support('automatic-feed-links'); // 投稿とコメントのRSSフィードのリンクを有効化
+add_theme_support('title-tag'); // タイトルタグ自動生成
+add_theme_support(
+'html5',
+array( //HTML5でマークアップ
+'search-form',
+'comment-form',
+'comment-list',
+'gallery',
+'caption',
+)
+);
+}
+
+add_action('after_setup_theme', 'my_setup');
+// セットアップの書き方の型
+// function custom_theme_setup() {
+// add_theme_support( $feature, $arguments );
+// }
+// add_action( 'after_setup_theme', 'custom_theme_setup' );
+
+add_theme_support( )など、いきなり見覚えのない関数が出てきましたが、これがWordPressの独自関数です。
+
+
+メインクエリ
+サブクエリ
+have_posts( ) ：WordPress クエリにループできる結果があるかどうかをチェック、ブール型関数で、TRUE または FALSE を返します。
+the_post( )
+the_title( )：タイトル
+the_excerpt( )
+get_the_category( )：所属カテゴリー
+the_permalink( ) ：記事へのリンク
+the_post_thumbnail( )：アイキャッチ画像
+
+3.ロゴ / サブタイトルを動的に表示する
+グローバルメニュー全体を動的に表示するためにロゴとサブタイトルの表示を動的に表示する。
+is_home( )
+is_front_page( )
+esc_url( )
+home_url( )
+bloginfo( )
+
+4.メニューを動的に表示する
+ヘッダーメニューとドロワーメニューを動的にしていきます。
+wp_nav_menu( ) にfunctions.phpで記述したメニュー名を引数として渡します。
+wp_nav_menu( )
+
+4.パンくず・表示中の一覧ページ名・説明を動的に表示
+bcn_display( )
+the_archive_title( )
+the_archive_description( )
+
+5.フックを使ってthe_archive_title( )をカスタムする
+is-category()
+is_tag()
+is_date()
+
+single.php作成
+タイトル
+h2~h4までの見出し
+本文のダミーテキスト
+改ページ
+アイキャッチ
+カテゴリー
+タグ2つ以上
+抜粋  
+
+コンテンツ部分を実装する
+タイトル〜タグ一覧の手前までのコンテンツ部分
+post_class()
+get_the_category()
+get_category_link()
+get_the_modified_time()
+the_content()
+wp_link_pages()
+
+4. タグを一覧表示する
+get_the_tags()
+get_tag_link()
+
+シェアボタンエリアを表示する
+1.sns.jsをfunctions.phpから読み込む
+→jsフォルダにあるsns.jsをfunctions.phpに追記
+is_single()
+
+2.footer.phpに「投稿の時のみ」シェアボタンエリアを表示するよう記述
+
+3.シェアボタンを動的にする
+        </nav>/footer-sns-buttons -->
+        <nav class="footer-sns-buttons">
+          <ul>
+            <li>
+              <a class="m_twitter" href="https://twitter.com/share?url=<?php the_permalink(); ?>  " rel="nofollow" target="_blank">
+                <img src="<?php echo esc_url( get_template_directory_uri() . '/img/icon-twitter.png' ); ?>" alt="">
+              </a>
+            </li>
+            <li>
+              <a class="m_facebook" href="https://www.facebook.com/share.php?u=<?php the_permalink(); ?>" rel="nofollow" target="_blank">
+                <img src="<?php echo esc_url( get_template_directory_uri() . '/img/icon-facebook.png' ); ?>" alt="">
+              </a>
+            </li>
+            <li>
+              <a class="m_hatena" href="https://b.hatena.ne.jp/add?mode=confirm&url=<?php the_permalink(); ?>&title=<?php the_title(); ?>" rel="nofollow" target="_blank">
+                <img src="<?php echo esc_url( get_template_directory_uri() . '/img/icon-hatena.png' ); ?>" alt="">
+              </a>
+            </li>
+            <li>
+              <a class="m_line" href="https://social-plugins.line.me/lineit/share?url=<?php the_permalink(); ?>" rel="nofollow" target="_blank">
+                <img src="<?php echo esc_url( get_template_directory_uri() . '/img/icon-line.png' ); ?>" alt="">
+              </a>
+            </li>
+            <li>
+              <a class="m_pocket" href="https://getpocket.com/edit?url=<?php the_permalink(); ?>" rel="nofollow" target="_blank">
+                <img src="<?php echo esc_url( get_template_directory_uri() . '/img/icon-pocket.png' ); ?>" alt="">
+              </a>
+            </li>
+          </ul>
+        </nav><!-- /footer-sns-buttons -->
+
+single.phpに関連記事を表示させる
+表示中の投稿と同じカテゴリーに所属する投稿を表示。
+表示中の投稿を除いて
+ランダムに
+サブクエリを使って
+8件表示してください
+          <!-- entry-related -->
+          <div class="entry-related">
+            <div class="related-title">関連記事</div>
+              <?php if( has_category() ) {
+                $post_cats = get_the_category();
+                $cat_ids = array();
+                //所属カテゴリーのIDリストを作っておく
+                foreach($post_cats as $cat) {
+                  $cat_ids[] = $cat->term_id;
+                }
+              }
+              $myposts = get_posts( 
+                array(
+                  'post_type' => 'post', // 投稿タイプ
+                  'posts_per_page' => '6', // ８件を取得
+                  'post__not_in' => array( $post->ID ),// 表示中の投稿を除外
+                  'category__in' => $cat_ids, // この投稿と同じカテゴリーに属する投稿の中から
+                  'orderby' => 'rand' // ランダムに
+                )
+              );
+              if( $myposts ): ?>
+              <div class="related-items">
+                <?php foreach($myposts as $post): setup_postdata($post);?>
+                <a class="related-item" href="<?php the_permalink(); ?>">
+                  <div class="related-item-img">
+                    <?php
+                      if (has_post_thumbnail() ) {
+                      // アイキャッチ画像が設定されてればミディアムサイズで表示
+                        the_post_thumbnail('medium');
+                      } else {
+                      // なければnoimage画像をデフォルトで表示
+                        echo '<img src="' . esc_url(get_template_directory_uri()) . '/img/noimg.png" alt="">';
+                      }
+                    ?>
+                  </div>
+                  
+                  <div class="related-item-title">
+                    <?php the_title(); ?>
+                  </div><!-- /related-item-title -->
+
+                </a><!-- /related-item -->
+                <?php endforeach; wp_reset_postdata(); ?>
+              </div><!-- /related-items -->
+              <?php endif; ?>
+          </div><!-- /entry-related -->
+
+page.phpを編集し、固定ページを作る
+
+page.phpで固定ページを作る＋サイトの保守性
+
+独自関数を定義する＋ファイルを分割して管理する
+index、archive、single、これまで作ってきたファイル全てで『postが所属するカテゴリーの取得』がありました。
+基本的に共通化出来る箇所は共通関数を用いてこれらを使用していく芳香性のほうが良い。
+理由として、仮に開発で同様な関数をいくつものページに記載していた場合、
+改修箇所が多くなるにつれて、保守性に難があるようになる。
+→改修箇所が多いと見落としやすくなってしまう。
+
+POINT
+WP案件等でカスタマイズする際にこの関数を使い回すことが出来れば、
+口数的にも楽ができる！
+
+トップページにピックアップ記事を表示する手順
+・目標物の確認トップページのピックアップ記事とは
+inde.phpを作成するした時に記事一覧パートの上部にある固定ページのこと。
+→これは常に上位表示できるもの。
+
+1. template-partsフォルダ内に『pickup.php』を作る
+・ここのページも同様にテンプレ化しておいた方が良い。
+したがって、index.phpの<!– pickup –>〜<!– /pickup –>までをコピーし、
+template-partsフォルダ内に作ったpickup.phpに貼り付け。
+→読み出しを忘れずに。
+<?php get_template_part('template-parts/footer-sns');?>
+
+2. 投稿IDを指定して、ピックアップ記事を表示する
+投稿IDを指定する方法
+get_the_post_thumbnail( )
+get_the_title( )
+
+
+<!-- pickup -->
+<div id="pickup">
+	<div class="inner">
+
+		<div class="pickup-items">
+
+		<?php $pickup_ids = array( 10 ,11 ); // ピックアップする記事の投稿idを指定する ?>
+		<?php foreach ( $pickup_ids as $id ) : // ピックアップする記事分ループ表示する ?>
+
+		<a href="<?php echo esc_url( get_permalink( $id ) ); ?>" class="pickup-item">
+			<div class="pickup-item-img">
+				<?php
+					if ( has_post_thumbnail( $id ) ) {
+						echo get_the_post_thumbnail( $id, 'large' );
+					} else {
+						echo '<img src="' . esc_url( get_template_directory_uri() ) . '/img/noimg.png" alt="">';
+					}
+				?>
+				<!-- 右上にタグを表示する -->
+				<div class="pickup-item-tag"><?php my_the_post_category( false, $id ); ?></div><!-- /pickup-item-tag -->
+			</div><!-- /pickup-item-img -->
+			<div class="pickup-item-body">
+				<!-- タイトルを表示する -->
+				<h2 class="pickup-item-title"><?php echo esc_html( get_the_title( $id ) ); ?></h2><!-- /pickup-item-title -->
+			</div><!-- /pickup-item-body -->
+		</a><!-- /pickup-item -->
+
+		<?php endforeach; ?>
+
+		</div><!-- /pickup-items -->
+
+	</div><!-- /inner -->
+</div><!-- /pickup -->
+
+$pickup_ids = array( 10 ,11 )にて
+固定で表示したい場合に表示する最もオーソドックスなやり方。
+
+◯『pickup』のタグがついた投稿をピックアップ記事として表示する。
+『投稿IDで指定する方法』では、テンプレートをカスタマイズしない限り、
+表示する投稿は固定されてしまう。
+→PHP等のPG知識が必要となる。
+　→案件によっては知識がないクライアントが、ピックアップ記事を選べるようにしたいという要望もある。
+
+そんな時のために、投稿編集画面から『pickup』というタグをつけるとピックアップ記事
+として表示するパターンも入れて入れておきます。
+表示確認用として、4〜5記事ほどpickupタグをつけた投稿しておく
+投稿の準備ができたら、template-partsフォルダ内に『pickup_by_tag.php』を作って実装していきます。	
+pickupというタグがついた投稿のうち
+新しい順に
+3件を表示
+
+ピックアップタグがついた記事のみを、想定通りの並び順で表示できていれば完成です❗️
+
+案件では、固定表示でよければ投稿IDを指定する、
+クライアントが更新できるようにしたければタグというふうに使い分けましょう。
+
+8thステップ
+ウィジェット&自作の２パターンでサイドバーを作る手順を解説
+1. サイドバーの作り方2パターン	
+サイドバーの作り方には、大きく分けて2パターンあります。
+1.ウィジェットを使って作るパターン
+2.ウィジェットは使わず、自作コード（＋ショートコード）で作るパターン
+
+1.について
+ある程度WordPressに慣れたクライアントで、サイドバーの項目を編集したいと要望があった場合に備える	。
+2. ウィジェットを有効化し、サイドバーを追加する
+まずはウィジェットを有効化するためのコードをfunctions.phpに記述していきます。
+→register_sidebar()
+
+/**
+* ウィジェットの登録
+*
+* @codex http://wpdocs.osdn.jp/%E9%96%A2%E6%95%B0%E3%83%AA%E3%83%95%E3%82%A1%E3%83%AC%E3%83%B3%E3%82%B9/register_sidebar
+*/
+function my_widget_init() {
+    register_sidebar(
+      array(
+        'name' => 'サイドバー', //表示するエリア名
+        'id' => 'sidebar', //id
+        'before_widget' => '<div id="%1$s" class="widget %2$s">',
+        'after_widget' => '</div>',
+        'before_title' => '<div class="widget-title">',
+        'after_title' => '</div>',
+      )
+    );
+  }
+  add_action( 'widgets_init', 'my_widget_init' );
+  
+これで有効化できる
+登録した「サイドバー」も表示されていますね。
+register_sidebar() は名前だけ見るとサイドバーしか登録できなそうですが、
+この関数で記事上・記事下・フッターなど自由にウィジェットエリアを登録できます。
+
+3. ウィジェットエリア「サイドバー」をsidebar.phpに表示させる
+sidebar.phpにウィジェットエリア「サイドバー」を表示させるためのコードを記述
+◯キーワード
+is_active_sidebar()
+dynamic_sidebar()
+
+<!-- secondary -->
+<aside id="secondary">
+<?php if ( is_active_sidebar( 'sidebar' ) ) : ?>
+<?php dynamic_sidebar( 'sidebar' ); ?>
+<?php endif; ?>
+</aside><!-- secondary -->
+これだけでOK
+
+register_sidebar()と同じく、is_active_sidebar()・dynamic_sidebar()も名前は
+サイドバー専用っぽい関数ですが、ウィジェットエリアを表示させる時には常にこの関数を使います。
+
+4. 「サイドバー」の中身を設定する
+サイドバーを表示する準備が整ったので、元々HTMLで書かれていた項目を再現してみましょう。
+元々あった項目
+プロフィール
+検索
+人気記事5つ
+新着記事5つ
+日付アーカイブ
+
+
+検索結果ページと404ページをの作り方を解説
+1. 404ページを作る
+
+作り方の手順は、これまでの知識を使って404.htmlをほぼそのままテンプレート化するだけなので、解説なしでも簡単
+
+
+<?php get_header(); ?>
+
+<!-- content -->
+<div id="content" class="m_one m_404">
+<div class="inner">
+
+<!-- primary -->
+<main id="primary">
+
+<!-- entry -->
+<div class="entry-404">
+<h1 class="entry-404-head"><span>404</span>Not Found</h1><!-- /entry-404-head -->
+<div class="entry-404-lead">お探しのページが<br class="m_sp" />見つかりませんでした</div><!-- /entry-404-head -->
+<p class="entry-404-content">申し訳ありませんが、お探しのページが存在しないか、アクセスできません。<br>入力されたURLが正しいかご確認ください。</p>
+<!-- /entry-404-content -->
+<div class="entry-404-btn"><a class="btn" href="<?php echo home_url(); ?>">トップページに戻る</a></div><!-- /entry-404-btn -->
+</div><!-- /entry-404 -->
+
+</main><!-- /primary -->
+
+<?php get_sidebar(); ?>
+
+</div><!-- /inner -->
+</div><!-- /content -->
+
+<?php get_footer(); ?>
+
+
+2. search.phpで検索結果ページを作る
+archive.phpと違うのは、上に挙げたキーワードくらいです。
+
+wp_queryは重要かつ使用頻度も高いので、公式サイトや書籍で使い方をよく確認しておいてください
+関数リファレンス/WP Query
+
+
+自作ショートコードでボタン作成
+0. 目標物の確認
+functions.phpにショートコード用のPHPを記述し、お問い合わせなどへの遷移を促すボタンを作っていきます。
+1. functions.phpにショートコード用のPHPを記述する
+WordPressに「これはショートコードだ」と認識してもらうため、まずfucntions.phpに設定用の記述を追加します。
+特にこのショートコードの設定の理解は難しいので、使い方についてWordPress公式リファレンスをしっかり読んでくださいね。
+
+ショートコード
+[btn link="http://localhost:8888/wordpress/%e3%82%bf%e3%82%a4%e3%83%88%e3%83%ab-2/"]お問合せはこちら[/btn]
+  <?php echo do_shortcode('[ショートコード文字列]'); ?>

@@ -1,0 +1,5 @@
+controller.php:共通処理
+function.php：共通関数
+
+個別の処理に関しては Controller フォルダの中のクラスに書く。
+→index.php

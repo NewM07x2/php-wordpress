@@ -1,0 +1,19 @@
+◯メモ
+開発規模が大きくなると保守等で管理がしやすいようにフォルダを用途に合わせて分けておいたほうが良い。
+
+■データベースの設定
+まずデータをDBで管理がするための設定を行う。
+設定に感するファイルはconfigにいれておくと良い。
+よって、init.sqlを作成し、SQL文を管理がしていく。
+1.BDの作成
+型；create database DB名;
+今回以下で作成していく。
+create database login_test;
+
+2.ユーザーの権限の設定
+「grant all on」を使用して
+全てのテーブルに対して、ローカルホストから dbuser がアクセスできるようにしてあげましょう。
+grant all on DB名.* to dbuser@localhost identified by 'PW';
+
+3.テーブル作成
+create table users ();
